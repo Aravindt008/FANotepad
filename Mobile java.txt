@@ -1,0 +1,63 @@
+package com.infy.entity;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+//Strictly follow class diagram
+
+@Entity
+@Table(name="Mobile")
+public class Mobile {
+	
+	@Id
+	private Integer mobileId;
+	
+	private String companyName;
+
+	private  String modelName;
+	
+	
+	private  String ram;
+	private  String os;
+	private Integer price;
+	public Integer getMobileId() {
+		return mobileId;
+	}
+	public void setMobileId(Integer mobileId) {
+		this.mobileId = mobileId;
+	}
+	public String getCompanyName() {
+		return companyName;
+	}
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+	public String getModelName() {
+		return modelName;
+	}
+	public void setModelName(String modelName) {
+		this.modelName = modelName;
+	}
+	public String getRam() {
+		return ram;
+	}
+	public void setRam(String ram) {
+		this.ram = ram;
+	}
+	public String getOs() {
+		return os;
+	}
+	public void setOs(String os) {
+		this.os = os;
+	}
+	public Integer getPrice() {
+		return price;
+	}
+	public void setPrice(Integer price) {
+		this.price = price;
+	}
+
+	
+	
+}

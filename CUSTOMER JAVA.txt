@@ -1,0 +1,70 @@
+package com.infy.entity;
+
+import java.util.Objects;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import com.mysql.cj.x.protobuf.MysqlxExpr.Object;
+//Strictly follow class diagram
+
+@Entity
+@Table(name="Customer")
+public class Customer {
+	
+	@Id
+	@Column(name="customer_id")
+	private Integer customerId;
+	
+	@Column(name="name")
+	private String customerName;
+	
+	@Column(name="address")
+	private String address ;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "mobile_id", unique = true)
+	
+	private Mobile mobile;
+
+	public Integer getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(Integer customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public Mobile getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(Mobile mobile) {
+		this.mobile = mobile;
+	}
+	}
+	
+	
+
+
