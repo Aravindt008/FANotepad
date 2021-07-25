@@ -1,0 +1,66 @@
+package com.infy.service;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.infy.dto.CustomerDTO;
+import com.infy.dto.MobileDTO;
+import com.infy.entity.Customer;
+//import com.infy.exception.InfyBankException;
+import com.infy.repository.CustomerRepository;
+@Service(value = "customerService")
+@Transactional
+public class CustomerServiceImpl implements CustomerService {
+	@Autowired
+	private CustomerRepository customerRepo;
+	
+	public List<CustomerDTO> getCustomerDetails() throws Exception{
+		Iterable<Customer> customers = customerRepo.findAll();
+		List<CustomerDTO> customerDTOs = new ArrayList<>();
+		customers.forEach(customer -> {
+			CustomerDTO customerDTO= new CustomerDTO();
+			customerDTO.setCustomerId(customer.getCustomerId());
+			customerDTO.setCustomerName(customer.getCustomerName());
+			customerDTO.setAddress(customer.getAddress());
+			
+			MobileDTO mobileDTO = new MobileDTO();
+			mobileDTO.setMobileId(customer.getMobile().getMobileId());
+			mobileDTO.setCompanyName(customer.getMobile().getCompanyName());
+			mobileDTO.setModelName(customer.getMobile().getModelName());
+			mobileDTO.setRam(customer.getMobile().getRam());
+			mobileDTO.setOs(customer.getMobile().getOs());
+			mobileDTO.setPrice(customer.getMobile().getPrice());
+			customerDTO.setMobile(mobileDTO);
+			
+			customerDTOs.add(customerDTO);	
+		});
+		if (customerDTOs.isEmpty())
+		{
+			throw new Exception("service customers not found  ");
+		}
+		return customerDTOs;
+	}
+	
+	@Override
+	public CustomerDTO getCustomer(Integer customerId) throws Exception {
+		Optional<Customer> optional = customerRepo.findById(customerId);
+		Customer customer = optional.orElseThrow(() -> new Exception("Service.CUSTOMER_NOT_FOUND"));
+		CustomerDTO customerDTO = new CustomerDTO();
+		customerDTO.setCustomerId(customer.getCustomerId());
+		customerDTO.setCustomerName(customer.getCustomerName());
+		customerDTO.setAddress(customer.getAddress());
+		
+		MobileDTO mobileDTO=new MobileDTO();
+		mobileDTO.setMobileId(customer.getMobile().getMobileId());
+		mobileDTO.setModelName(customer.getMobile().getModelName());
+		mobileDTO.setRam(customer.getMobile().getRam());
+		mobileDTO.setOs(customer.getMobile().getOs());
+		mobileDTO.setPrice(customer.getMobile().getPrice());
+		customerDTO.setMobile(mobileDTO);
+		return customerDTO;
+	}
+		
+		
+	}
