@@ -1,0 +1,141 @@
+    
+Delete operation using spring data-Demo
+https://lex.infosysapps.com/en/viewer/web-module/lex_auth_013039802863517696514?collectionId=lex_18438455507105735000&collectionType=Course
+
+
+Data Validation using Bean Validation API - Demo
+https://lex.infosysapps.com/en/viewer/web-module/lex_auth_0130653988348641281121?collectionId=lex_16539490192305756000&collectionType=Course
+
+TO BE IMPLEMENTED:
+•	REPOSITORY
+MENTOR REPOSITORY:
+package com.infy.repository;
+import org.springframework.data.repository.CrudRepository;
+import com.infy.entity.Mentor;
+public interface MentorRepository extends CrudRepository<Mentor, Integer> {
+}
+
+PROJECT REPOSITORY:
+package com.infy.repository;
+import org.springframework.data.repository.CrudRepository;
+import com.infy.entity.Project;
+public interface ProjectRepository extends CrudRepository< Project, Integer>{
+}
+
+
+UTILITY CLASSES:
+•	LOGGING ASPECT
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+@Component
+@Aspect
+public class LoggingAspect {
+	public static final Log LOGGER = LogFactory.getLog(LoggingAspect.class);
+	@AfterThrowing(pointcut = "execution(* com.infy.service.*Impl.*(..))", throwing = "exception")
+	public void logServiceException(Exception exception) {
+		LOGGER.error(exception.getMessage(), exception);
+	}
+}
+
+
+
+
+
+
+
+
+SERVICE CLASS:
+
+
+//change DTO classname , entity class, repository name and class name 
+package com.infy.service;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+//import com.infy.dto.CustomerDTO;
+//import com.infy.dto.LoanDTO;
+//import com.infy.entity.Customer;
+//import com.infy.entity.Loan;
+//import com.infy.exception.InfyBankException;
+//import com.infy.repository. ProjectRepository;
+//import com.infy.repository. MentorRepository;
+@Service(value = "projectService")
+@Transactional
+public class ProjectAllocationServiceImpl implements ProjectAllocationService{
+	@Autowired
+	private ProjectRepository projectRepository;
+	
+	@Autowired
+	private MentorRepository MentorRepository;
+	
+	
+
+
+
+API CLASS:
+@RestController
+@RequestMapping(value = "/infybank")
+public class CustomerAPI {
+	@Autowired
+	private CustomerService customerService;
+	@Autowired
+	private Environment environment;
+	@GetMapping(value = "/customers")
+	public ResponseEntity<List<CustomerDTO>> getAllCustomerDetails() throws Exception {
+		List<CustomerDTO> customerList = customerService.getAllCustomers();
+		return  new ResponseEntity<>(customerList, HttpStatus.OK);
+	}
+	@GetMapping(value = "/customers/{customerId}")
+	public ResponseEntity<CustomerDTO> getCustomerDetails(@PathVariable Integer customerId) throws Exception {
+		CustomerDTO customer = customerService.getCustomer(customerId);
+		return new ResponseEntity<>(customer, HttpStatus.OK);
+	}
+	@PostMapping(value = "/customers")
+	public ResponseEntity<String> addCustomer(@Valid @RequestBody CustomerDTO customerDTO) throws Exception {
+		Integer customerId = customerService.addCustomer(customerDTO);
+		String successMessage = environment.getProperty("API.INSERT_SUCCESS") + customerId;
+		return new ResponseEntity<>(successMessage, HttpStatus.CREATED);
+	}
+	@PutMapping(value = "/customers/{customerId}")
+	public ResponseEntity<String> updateCustomer(@PathVariable Integer customerId, @RequestBody CustomerDTO customer)
+			throws Exception {
+		customerService.updateCustomer(customerId, customer.getEmailId());
+		String successMessage = environment.getProperty("API.UPDATE_SUCCESS");
+		return new ResponseEntity<>(successMessage, HttpStatus.OK);
+	}
+	@DeleteMapping(value = "/customers/{customerId}")
+	public ResponseEntity<String> deleteCustomer(@PathVariable Integer customerId) throws Exception {
+		customerService.deleteCustomer(customerId);
+		String successMessage = environment.getProperty("API.DELETE_SUCCESS");
+		return new ResponseEntity<>(successMessage, HttpStatus.OK);
+	}
+}
+
+
+
+
+
+ENTITY CLASS:
+
+@Entity
+public class Address {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer addressId;
+
+
+@Entity
+public class Customer {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer customerId;
+	private String emailId;
+	private String name;
+	private LocalDate dateOfBirth;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "address_id", unique = true)
+	private Address address;
